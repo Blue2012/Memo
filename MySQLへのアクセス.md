@@ -23,25 +23,42 @@ systemctl restart mysqld
 これでログインできるようになるが、この状態だと特権が必要な操作をするとエラーになってしまう
 （このモードでは実行できません的なやつ）
 
-なので、いったん、以下のコマンドを実行して、rootのパスワード変更、root以外のユーザー作成を済ませてしまう。
+なので、いったん、以下のコマンドを実行して、rootのパスワード変更、権限付与を行い、
+my.cnfファイルからオプションを外してやることで無事に接続できるようになる（この時点でポートも3306でListenする）
+
+利用するDBを選択
 
 ```
-FLUSH PRIVILEGES;
+use mysql;
 ```
 
-ただし、以下のエラーが出力されるケースがあるので、エラーが出力された場合は以下のように対処する。
-
-
-```
-【出力されるエラー】
-ERROR 1146 (42S02): Table 'mysql.user' doesn't exist
-```
-
-まずはSQLから抜けて、以下のコマンドをSSHから入力。
+userテーブルを削除
 
 ```
-mysqld  --initialize --user=mysql
+truncate table user;
 ```
 
-参考URL
-https://www.field-note.net/linux/480/
+DBに反映
+
+```
+flush privileges;
+```
+
+rootの作成
+
+```
+CREATE USER 'root'@'%' IDENTIFIED BY 'パスワード';
+```
+
+rootに全権付与
+
+```
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+```
+
+DBに反映
+
+```
+flush privileges;
+```
+
