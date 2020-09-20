@@ -62,3 +62,6 @@ DBに反映
 flush privileges;
 ```
 
+参考記事
+https://qiita.com/shockdayukio/items/bd663d1fa0a3be26688f
+
